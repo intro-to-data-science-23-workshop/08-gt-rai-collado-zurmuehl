@@ -1,0 +1,214 @@
+---
+title: "Assignment 2 - Functions, iteration and debugging"
+author: "Lino Zurmuehl + linozurmuehl"
+date: "`r format(Sys.time(), '%B %d, %Y | %H:%M:%S | %Z')`"
+output:
+  html_document:
+    code_folding: show
+    df_print: paged
+    highlight: tango
+    number_sections: no
+    theme: cosmo
+    toc: no
+---
+  
+<style>
+div.answer {background-color:#f3f0ff; border-radius: 5px; padding: 20px;}
+</style>
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      eval = TRUE,
+                      error = FALSE,
+                      message = FALSE,
+                      warning = FALSE,
+                      comment = NA)
+```
+
+<!-- Do not forget to input your Github username in the YAML configuration up there --> 
+
+***
+
+```{r, include = T}
+library(tidyverse)
+library(unvotes)
+library(gt)
+```
+
+<br>
+
+***
+
+
+### Task 1 - Fun with functions
+
+a) Program a function `ultimate_answer()` that always returns the number 42 regardless of which input is provided, and show that it works providing three function calls that test different input types!
+
+```{r}
+ultimate_answer <- function(x) {
+  if (!is.na(x)){ #checking for NA
+    return(42)
+  }
+  else {
+    return(42) #even if it is NA giving out 42
+  }
+}
+
+ultimate_answer(21)
+ultimate_answer("Bla")
+ultimate_answer(NA)
+ultimate_answer(T)
+```
+
+b) Write an R function called `color_guessing_game()` that allows the player to guess one of four colors (red, yellow, green, blue). The game will randomly select one of the colors and prompt the player to guess it. If the player's guess matches the selected color, they win, otherwise, they lose. *Hint:* You will need the function `readline()` to enable interactive communication between the game and the player.
+
+```{r}
+color_guessing_game <- function(){
+  available_colors <- c("red", "yellow", "green", "blue") #creating a vector with all colors
+  winning_color <- sample(available_colors, 1)
+  answer <- readline("Guess one of the following colors: red, yellow, green, blue: ")
+  if (answer == winning_color) {
+    cat("WOW you won! The right color was", winning_color, ".\n") #checking fo winning color
+  }
+  else if(any(answer == available_colors)) {
+    cat("Sadly you lost. The right color was", winning_color, ".\n") #checking if input was one of the colors
+  }
+  else {
+    cat("You did not enter one of the colors I gave you.") # Wrong input
+  }
+}
+  
+color_guessing_game()
+```
+
+<br>
+
+***
+
+### Task 2 - Functional programming in practice
+
+The `unvotes` package (hosted both on [CRAN](https://cran.r-project.org/web/packages/unvotes/index.html) and [GitHub](https://github.com/dgrtwo/unvotes)) provides data on the voting history of countries in the [United Nations General Assembly](http://www.un.org/en/ga/), along with information such as date, description, and topics for each vote. The package contains three datasets: `un_votes`, providing the history of each country's votes, `un_roll_calls`, providing information on each roll call vote, and `un_roll_call_issues`, providing issue (topic) classifications of roll call votes. Check out the [database tutorial](https://github.com/dgrtwo/unvotes) if you want to make yourself familiar with the data structure. Then, work on the following tasks.
+
+a) Calculate how often, on average, Germany agreed with the US on a vote in the UN general assembly since 1990. Votes where voting information for one of the countries is missing should be discarded.
+
+```{r}
+vote_call_agreement <- un_votes %>%
+  inner_join(un_roll_calls, by = "rcid") %>% 
+  filter(format(date, "%Y") >= 1990, #formatting the date function to match input
+         country_code == "US" | country_code == "DE") %>% 
+  select(rcid, country_code, vote) %>% 
+  pivot_wider(names_from = country_code, values_from = vote) %>% #spreading the dataframe into wider form
+  filter(!is.na(US),
+         !is.na(DE)) %>% #omitting the NAs
+  mutate(agreement = ifelse(US == DE, 1, 0)) #assigning agreement labels
+
+
+mean(vote_call_agreement$agreement)
+```
+US and Germany agrre 44.9% of the times. 
+
+<br>
+
+b) Now, create a function, `votes_agreement_calculator()`, that takes country identifiers as well as a `year_min` argument as inputs and that returns the share of agreement in voting between any two specified countries as numeric value, for a time period specified with year >= `year_min`. The function should take the necessary data frames directly from the `unvotes` package. Then, test the function by computing the agreement rates for (a) the United States and Russia for votes cast in 2000 and later and (b) France and the UK for votes cast in 2000 and later!
+
+```{r}
+votes_agreement_calculator <- function(country_input_1, country_input_2, year_min){
+  
+  vote_call_agreement <- un_votes %>%
+    inner_join(un_roll_calls, by = "rcid") %>% 
+    filter(format(date, "%Y") >= year_min,
+           country_code == country_input_1 | 
+           country_code == country_input_2)
+  
+    if (!any(vote_call_agreement$country_code == country_input_1)) { #I included this check bc of 2c
+      #Countries like Czechoslovakia would get an error message in 2c bc 
+      #they were dissolved before the min year and 
+      #could not be referred to later in the function as a part of the df
+    return(NA)
+    } else if (!any(vote_call_agreement$country_code == country_input_2)) {
+    return(NA)
+    } else {
+    vote_call_agreement <- vote_call_agreement %>% 
+    select(rcid, country_code, vote) %>% 
+    pivot_wider(names_from = country_code, values_from = vote) %>%
+    filter(!is.na(!!sym(country_input_1)), #using !!sym() to transform the character into an symbol
+           !is.na(!!sym(country_input_2))) %>% #with that we can refer to the input like a variable
+    mutate(agreement = ifelse(.data[[country_input_1]] == .data[[country_input_2]], 1, 0))
+    #specifying the input as part of the data to get the mutate to process the input
+    return(mean(vote_call_agreement$agreement))
+    }
+}
+
+votes_agreement_calculator("FR", "GB", 2000)
+votes_agreement_calculator("US", "RU", 2000)
+```
+France and the UK agree 92% of the times, while the US and Russia agrre only 24.6% of the times. 
+
+<br>
+
+c) Using `purrr` functionality, find out which three countries on average agreed with the US the most from the year 2000 on!
+
+```{r, eval = TRUE}
+countries_to_compare <- unique(na.omit(un_votes$country_code)) #getting every country_code and kicking out NA 
+
+results <- map_dbl(countries_to_compare, ~votes_agreement_calculator("US", .x, 2000)) #mapping with purrr
+
+top_us_agr <- data.frame(country_code = countries_to_compare, agreement = results)
+  
+top_us_agr_tbl <- top_us_agr %>% 
+  filter(country_code != "US") %>% #filtering out the US 
+  drop_na() %>% 
+  arrange(desc(agreement)) %>% #arranging in descending order
+  slice(1:3) %>% 
+  mutate(country = c("Israel", "Micronesia", "Palau")) %>% 
+  gt() %>% #using gt to set title and decimal points
+  tab_header(title = "Top 3 Countries with the Highest UN Vote Agreement with the US") %>% 
+  fmt_number(decimal = 2) %>% 
+  tab_options(heading.title.font.size = 11)
+
+top_us_agr_tbl
+```
+
+<br>
+
+***
+
+### Task 3 - Debugging code
+
+The following code snippet contains various bugs. Flag them and suggest a fix by adding a comment in the respective line. Example:
+
+```{r, eval = FALSE}
+library(Tidyverse) # BUG: typo in library(Tidyverse); should be library(tidyverse) instead
+```
+
+```{r, eval = FALSE}
+# load packages
+library(tidyverse)
+library(countrycode)
+library(Unvotes) # BUG: typo in library(Unvotes); should be library(unvotes) instead
+# get continents data
+continents <- countrycode:codelist %>% # BUG: countrycode:codelist needs to be countrycode::codelist
+  select(continent, iso2c) %>%
+  rename(country_code == iso2c) # BUG: should be = not ==
+un_votes <- left_join(x = un_votes, y = continents, by = country_code) # BUG: by argument should be in ""
+# get data on European UN votes
+eu_un_votes <- left_join(un_votes, un_roll_calls, by = "rcid") %>%
+  left_join(., un_roll_call_issues, by = "rcid") %>% 
+  filter(continent == "Europe", 
+         date >= "1991-01-01" & date <= "2021-12-31") %>% 
+  drop_na(short_name)
+# encode Europe's voting behavior numerically
+eu_un_votes <- eu_un_votes %>% 
+  mutate(yes_vt = if_else(vote == "yes", 1, 0)), # BUG: one ) too much 
+         no_vt = if_else(vote == "no", 1, 0),
+         abstention = if_else(vote == "abstain", 1, 0))
+# list top 10 most disagreed with UN resolutions
+hated_un <- eu_un_votes %>%
+  group_by(unres) # BUG: Pipe missing
+  summarise(sh_disagree_with = sum(no_vt,na.rm = T) / sum(c(yes_vt,no_vt, abstention), na.rm = T)) %>% 
+  arrange(desc(sh_disagree_with)) %>% 
+  head(10)
+hated_un
+``` 
+
+
