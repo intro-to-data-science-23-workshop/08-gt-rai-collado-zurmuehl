@@ -1,3 +1,4 @@
+<div align="center">
 <a href="https://gt.rstudio.com/"><img src="logo.svg" width="350px"/></a>
 # 08-gt-rai-collado-zurmuehl
 Presentation-ready tables with gt and gtExtra
