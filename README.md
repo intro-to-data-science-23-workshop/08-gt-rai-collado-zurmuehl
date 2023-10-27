@@ -1,4 +1,4 @@
-# Working with dplyr
+# Working with **gt** and **gtExtras**
 
 
 ## Summary
