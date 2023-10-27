@@ -14,6 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 It produces nice display tables which are different from the data tables.
 
 A display table is something which you often come across like tables in a web page, a journal article, or in a magazine.
+![table from The Hindu](pictures/Rohit_Sharma_in_WCs.png)
 
 **Note:** The display tables are output only and we are not going to use them as input ever again.
 
@@ -83,13 +84,13 @@ gt_table1
 
 That doesn't look too bad? It's really basic but hey we didn't ask for much:)
 
-Now we will go ahead and learn about adding parts of a gt Table - if you remember the shiny table from the Presentation:). A brief on them:
+Now we will go ahead and learn about adding parts of a gt Table - if you remember the shiny table from the Presentation:). A brief introduction on them:
 
-* the Table Header (optional; with a title and possibly a subtitle) 
-* the Stub and the Stub Head (optional; contains row labels, optionally within row groups having row group labels and possibly summary labels when a summary is present)
-* the Column Labels (contains column labels, optionally under spanner column labels)
-* the Table Body (contains columns and rows of cells)
-* the Table Footer (optional; possibly with footnotes and source notes)
+* the **Table Header** (optional; with a title and possibly a subtitle) 
+* the **Stub and the Stub Head** (optional; contains row labels, optionally within row groups having row group labels and possibly summary labels when a summary is present)
+* the **Column Labels** (contains column labels, optionally under spanner column labels)
+* the **Table Body** (contains columns and rows of cells)
+* the **Table Footer** (optional; possibly with footnotes and source notes)
 
 The way that we add parts like the Table Header and footnotes in the Table Footer is to use the **tab_*()** family of functions. 
 A **Table Header** is easy to add so let’s see how the previous table looks with a title:
@@ -105,7 +106,6 @@ gt_table1
 ## Execise 1:The Top 5 Best Selling Pizzas
 We want to get the best selling pizzas from this list. Also include the size and price and calculate the total revenue for each pizza.
 
-How would you go about it?
 ```{r, echo = TRUE}
 top_5_pizzas <- pizzaplace %>% 
   group_by(name, size, price) %>% 
@@ -151,7 +151,71 @@ top_5_table
 
 ## Exercise 2: Bringing Color into gt-Tables
 
-Aditya:
+Okay so now we have a neat table with a Title followed by Subtitle. This looks neat and clean than the first one we created. Yay!
+
+Now, what can we do more to this: maybe we can group some rows together, we can add a highlight color to one of the cells, and maybe we can give the borders some color.
+To group rows together, we can use the tab_row_group() function. The syntax for this function is:
+
+tab_row_group(data, label, rows, id = label, others_label = NULL, group = NULL)
+
+With the tab_style() function we can target specific cells and apply styles to them. This is best done in conjunction with the helper functions cell_text(), cell_fill(), and cell_borders().
+Here are some of the styles we can apply:
+
+* the background color of the cell (cell_fill(): color)
+* the cell's text color, font, and size (cell_text(): color, font, size)
+* the text style (cell_text(): style), enabling the use of italics or oblique text.
+* the text weight (cell_text(): weight), allowing the use of thin to bold text (the degree of choice is greater with variable fonts)
+* the alignment and indentation of text (cell_text(): align and indent)
+* the cell borders (cell_borders())
+
+**Exercise 2:** 
+
+* Let's start with the backgroud color of the cells and the text. Change the background color of the title and subtitle from whitespace to Blue.
+* Now, try and change the background color of the column labels to light grey and the font to bold.
+* Using tab_style, try and change the subtitle to italics
+
+```{r}
+
+# Insert your answer here. Use the functions mentioned above.
+
+```
+## Solution for Exercise 2.1: 
+```{r}
+top_5_table <- top_5_table %>%
+  tab_options(heading.background.color = 'blue') %>% 
+  tab_options(column_labels.font.weight = 'bold',
+    column_labels.background.color = 'lightgrey') %>% 
+  tab_style(
+    style = cell_text(style = 'italic'),
+    locations = cells_title(groups = 'subtitle'))
+top_5_table
+```
+2.2. In the current table we have three Pizza Size - S, L, and M. How will you group the table so that you have three **row groups**?
+```{r}
+
+# Insert your answer here. Use the functions mentioned above.
+
+```
+## Solution for Exercise 2.2: 
+```{r}
+top_5_table <- top_5_table %>%
+  tab_row_group(
+    id = "S",
+    label = "Pizza Size - S",
+    rows = 1
+    ) %>%
+  tab_row_group(
+    id = "L",
+    label = "Pizza Size - L",
+    rows = c(2,3,4)
+  ) %>%
+  tab_row_group(
+    id = "M",
+    label = "Pizza Size - M",
+    rows = 5
+  )
+top_5_table
+```
 
 ## Exercise 3: Using gtExtras
 
@@ -161,7 +225,9 @@ In the next exercise we will be using **gtExtras** to go above an beyond.
 * Add a picture next to the title representing your favorite pizza. Use a picture URL from the web 
 
 ```{r}
+
 # Insert your answer here. Use https://jthomasmock.github.io/gtExtras/reference/index.html as reference for the needed functions
+
 ```
 ## Solution for Exercise 3: 
 ```{r}
