@@ -119,8 +119,6 @@ top_5_pizzas
 ```
 So the top selling pizza combination is the small big_meat pizza! 
 
-## Using gt to Get the Table Presentation Ready
-
 **Exercise 1:** Lets change the table into a gt object and:
 
 * give it a title and subtitle and make the title bold (hint: use the md() function for that)
@@ -157,10 +155,10 @@ Aditya:
 
 ## Exercise 3: Using gtExtras
 
-In the next exercise we will be using gtExtras to go above an beyond.
+In the next exercise we will be using **gtExtras** to go above an beyond.
 * Create a bar plot in every row that indicates the revenue from each pizza
 * Use the New York Times theme
-* Add a picture next to the title representing your favorite pizza. Use a picture URL from the web. 
+* Add a picture next to the title representing your favorite pizza. Use a picture URL from the web 
 
 ```{r}
 # Insert your answer here. Use https://jthomasmock.github.io/gtExtras/reference/index.html as reference for the needed functions
@@ -177,4 +175,137 @@ top_5_table %>%
     ))
 
 ```
+# Thank You for Your Attention
 
+Further exercises for your own practice:
+Do you wanna work your way through a new dataset from the basics, then this script is for you. Just follow along and enjoy the process. Always remember the steps: first from the main dataset you should have a table ready for the outside world and then you use the gt package for formatting your display table.
+```{r}
+# install.packages("tidyverse")
+# install.packages("gt")
+# install.packages("gtExtras")
+# library(tidyverse)
+# library(gt)
+# library(gtExtras)
+
+
+
+# Loading and getting a preview of the dataset
+data("presidential")
+head(presidential)
+names(presidential)
+
+# Let's make a new table from this dataset. I want a table with the President and their party affiliation
+name_party <- presidential %>%
+  distinct(name, party)
+name_party
+```
+Now the first step: Change the table in gt object.
+```{r}
+
+# Insert your solution here.
+
+```
+**Solution:**
+```{r}
+table1 <- gt(name_party)
+table1
+```
+Add title and subtitle to our display table:
+```{r}
+
+# Insert your solution here.
+
+```
+**Solution:**
+```{r}
+table1 <- table1 %>%
+  tab_header(
+    title = "American President and the Party",
+    subtitle = "American Presidents and their party affiliation"
+  )
+table1
+```
+Let's make the title and subtitle standout - use of bold and italics:
+Add title and subtitle to our display table:
+```{r}
+
+# Insert your solution here.
+
+```
+**Solution:**
+```{r}
+table1 <- table1 %>%
+  tab_header(
+    title = md("**American President and the Party**"),
+    subtitle = md("*American Presidents and their party affiliation*")
+  )
+table1
+```
+Don't forget to give the credits - rule no. 1 of good research practice (hint: use tab_source_note())
+```{r}
+
+# Insert your solution here.
+
+```
+**Solution:**
+```{r}
+table1 <- table1 %>%
+  tab_source_note(
+    source_note = "Source: The 'presidential' package in ggplot2"
+  )
+table1
+```
+What to do if you want to share a information with your audience in the table: 
+Add a footnote indicating that Kennedy only served two terms:
+```{r}
+
+# Insert your solution here.
+
+```
+**Solution:**
+```{r}
+ttable1 <- table1 %>%
+  tab_footnote(
+    footnote = "He was president for only 2 years",
+    locations = cells_body(columns = name, rows = 2)
+  )
+table1
+```
+Now we want two groups in the table - a group of democratic presidents and a group of republican presidents. 
+Split up the table into two row groups:
+```{r}
+
+# Insert your solution here.
+
+```
+**Solution**
+```{r}
+table1 <- table1 %>%
+  tab_row_group(
+    id = "Republican",   # Unique ID
+    label = "Republican Party",
+    rows = c(1, 4, 5, 7, 8, 11)
+  ) %>%
+  tab_row_group(
+    id = "Democratic",   # Unique ID
+    label = "Democratic Party",
+    rows = c(2, 3, 6, 9, 10)
+  )
+table1
+```
+The table is ready and now we want to try out some functions from the **gtExtras** package.
+
+Use the package to edit the table to look like the tables in a NYT articles:
+```{r}
+gt_theme_nytimes(table1)
+```
+
+I am a dark mode fan and I want my table in the dark mode:
+```{r}
+gt_theme_dark(table1)
+```
+There are many more things you can do with the gt and gtExtras. Don't forget you just have to put a question mark to get more information about them.
+?gt
+?gtExtras
+
+Or you can get more info on these links: https://gt.rstudio.com/index.html and https://jthomasmock.github.io/gtExtras/index.html
