@@ -42,4 +42,4 @@ The material in this repository is made available under the [MIT license](http:/
 
 **Lino Zurmühl** prepared and conducted the live workshop session.
 
-All materials were previously discussed approved by the three group members.
+All materials were previously discussed and approved by the three group members.
