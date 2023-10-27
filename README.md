@@ -1,6 +1,4 @@
-<a href="https://gt.rstudio.com/"><img src="pictures/logo.svg" width="350px"/></a>
-# 08-gt-rai-collado-zurmuehl
-Presentation-ready tables with gt and gtExtra
+# Working with dplyr
 
 
 ## Summary
@@ -9,24 +7,27 @@ This repository provides materials for a session that is part of the [I2DS Tools
 
 ### Session contents
 
-This session will introduce you to the modern data wrangling workflow with R and dplyr. Data wrangling is one of the core steps in the data science workflow. dplyr is a grammar of data manipulation, providing a consistent set of verbs that help you solve the most common data manipulation challenges, including the manipulation of datasets and variables. 
+This session will introduce you to the production of tables with R and the packages **gt** and **gtExtras**. Tables are an important part of publishing data scientists' work, and the choices made while formatting it can make a difference in the public's understanding of the data and the study itself. These packages allow for the production of tables with data in the *dataframe* or *tibble* format, as well as easy formatting of various elements. 
 
 ### Main learning objectives
 
-The goals of this session are to (1) equip you with conceptual knowledge about the dplyr package and data wrangling workflow, (2) show you the three key verbs of the pacakge, and (3) provide you with practice material as well as some further readings.
+The goals of this session are to (1) equip you with conceptual knowledge about the **gt** and **gtExtras** packages and table producing workflow, (2) show you the basic functions the package, and (3) provide you with practice material as well as some further readings.
 
 
 ## Instructors
 
-- Simon Munzert ([website](http://simonmunzert.github.io/), [twitter](https://twitter.com/simonsaysnothin))
-- Kermit the Frog ([website](https://en.wikipedia.org/wiki/Kermit_the_Frog), [twitter](https://twitter.com/KermitTheFrog))
+- Aditya Narayan Rai
+- Letícia Figueiredo Collado
+- Lino Zurmühl
 
 
 ## Further resources
 
-- [dplyr overview at dplyr.tidyverse.org](https://dplyr.tidyverse.org/)
-- [Hands-on dplyr tutorial by Data School on YouTube](https://www.youtube.com/watch?v=jWjqLW-u3hc)
-- [R for Data Science book - part on data wrangling](https://r4ds.had.co.nz/wrangle-intro.html)
+- [gt package documentation](https://gt.rstudio.com/articles/gt.html)
+- [gtExtras documentation](https://jthomasmock.github.io/gtExtras/)
+- [gt project GitHub](https://github.com/rstudio/gt)
+- [Public forum with discussions on the use of gt](https://github.com/rstudio/gt/discussions)
+
 
 
 ## License
@@ -35,6 +36,10 @@ The material in this repository is made available under the [MIT license](http:/
 
 ## Statement of contributions
 
-**Simon Munzert** prepared the practice material and post-processed the recording.
+**Aditya Narayan Rai** prepared and conducted the live workshop session.
 
-**Kermit the Frog** prepared the presentation slides and recording. He also provided an example to the practice material.
+**Letícia Figueiredo Collado** prepared and recorded the introductory material, as well as conducted the live presentation.
+
+**Lino Zurmühl** prepared and conducted the live workshop session.
+
+All materials were previously discussed approved by the three group members.
