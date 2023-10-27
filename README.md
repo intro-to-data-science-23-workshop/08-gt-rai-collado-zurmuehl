@@ -1,3 +1,4 @@
+<a href="https://gt.rstudio.com/"><img src="pictures/logo.svg" width="350px"/></a>
 # Working with **gt** and **gtExtras**
 
 
