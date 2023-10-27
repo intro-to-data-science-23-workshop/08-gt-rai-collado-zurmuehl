@@ -13,7 +13,7 @@
 
 <meta name="date" content="2023-10-27" />
 
-<title>workshop_material</title>
+<title>Practice Material gt and gtExtras</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -350,32 +350,46 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">workshop_material</h1>
+<h1 class="title toc-ignore">Practice Material gt and gtExtras</h1>
 <h4 class="author">Lino, Aditya, Letícia</h4>
 <h4 class="date">2023-10-27</h4>
 
 </div>
 
 
-<div id="installing-packages-and-getting-started" class="section level2">
-<h2>Installing packages and getting started</h2>
-<pre class="r"><code>#install.packages(&quot;gt&quot;)
-
+<div id="short-recap-what-does-gt-package-do" class="section level2">
+<h2>Short Recap: What does gt package do?</h2>
+<p>It produces nice display tables which are different from the data
+tables.</p>
+<p>A display table is something which you often come across like tables
+in a web page, a journal article, or in a magazine.</p>
+<p><strong>Note:</strong> The display tables are output only and we are
+not going to use them as input ever again.</p>
+</div>
+<div id="what-more-can-gt-do" class="section level2">
+<h2>What more can gt do?</h2>
+<p>It helps in annotations, table element styling, and text
+transformations that serve to communicate the subject matter more
+clearly.</p>
+<p><strong>Example time - let’s see how does the gt package
+works</strong></p>
+<p><strong>But before that - some basics:</strong></p>
+<pre class="r"><code># install.packages(&quot;tidyverse&quot;)
+# install.packages(&quot;gt&quot;)
+# install.packages(&quot;gtExtras&quot;)
 library(gt)
-library(tidyverse)</code></pre>
-<pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-## ✔ dplyr     1.1.0     ✔ readr     2.1.4
-## ✔ forcats   1.0.0     ✔ stringr   1.5.0
-## ✔ ggplot2   3.4.1     ✔ tibble    3.2.0
-## ✔ lubridate 1.9.2     ✔ tidyr     1.3.0
-## ✔ purrr     1.0.1     
-## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()
-## ℹ Use the ]8;;http://conflicted.r-lib.org/conflicted package]8;; to force all conflicts to become errors</code></pre>
-<pre class="r"><code>pizza_place_raw&lt;- pizzaplace
-
-head(pizza_place_raw)</code></pre>
+library(tidyverse)
+library(gtExtras)</code></pre>
+<p><strong>A sneak peek into the dataset we are going to use - I hope
+you love “PIZZA”</strong></p>
+<pre class="r"><code>data(&quot;pizzaplace&quot;)</code></pre>
+<p>“pizzaplace” is an in-built dataset under the gt package.</p>
+<p>It has information about 32 different types of pizza in 4 different
+categories: classic, chicken, supreme, and veggie.</p>
+<p><strong>Let’s take a look at our dataset:</strong></p>
+<pre class="r"><code>names(pizzaplace)</code></pre>
+<pre><code>## [1] &quot;id&quot;    &quot;date&quot;  &quot;time&quot;  &quot;name&quot;  &quot;size&quot;  &quot;type&quot;  &quot;price&quot;</code></pre>
+<pre class="r"><code>head(pizzaplace)</code></pre>
 <pre><code>## # A tibble: 6 × 7
 ##   id          date       time     name        size  type    price
 ##   &lt;chr&gt;       &lt;chr&gt;      &lt;chr&gt;    &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;   &lt;dbl&gt;
@@ -385,69 +399,51 @@ head(pizza_place_raw)</code></pre>
 ## 4 2015-000002 2015-01-01 11:57:40 thai_ckn    L     chicken  20.8
 ## 5 2015-000002 2015-01-01 11:57:40 five_cheese L     veggie   18.5
 ## 6 2015-000002 2015-01-01 11:57:40 ital_supr   L     supreme  20.8</code></pre>
-</div>
-<div id="the-top-10-best-selling-pizzas" class="section level2">
-<h2>The Top 10 Best Selling Pizzas</h2>
-<p>We want to get the best selling pizzas from this list. Also include
-the size and price and calculate the total revenue for each pizza. How
-would you go about it?</p>
-<pre class="r"><code>top_5_pizzas &lt;- pizza_place_raw %&gt;% 
-  group_by(name, size, price) %&gt;% 
-  count(name) %&gt;% 
-  arrange(desc(n)) %&gt;% 
-  head(5) %&gt;% 
-  mutate(rev = price * n) %&gt;% 
-  ungroup()
+<p>Before using the gt package we need to have a table. Let’s create a
+table from our dataset using the dplyr functions.</p>
+<p>The table we are creating is this: <strong>Total Sales by Pizza Size
+(2015)</strong></p>
+<pre class="r"><code># Group the data by pizza size and calculate total sales for each size
+total_sales_by_size &lt;- pizzaplace %&gt;%
+  group_by(size) %&gt;%
+  summarise(total_sales = sum(price))
 
-top_5_pizzas</code></pre>
-<pre><code>## # A tibble: 5 × 5
-##   name        size  price     n    rev
-##   &lt;chr&gt;       &lt;chr&gt; &lt;dbl&gt; &lt;int&gt;  &lt;dbl&gt;
-## 1 big_meat    S      12    1914 22968 
-## 2 thai_ckn    L      20.8  1410 29258.
-## 3 five_cheese L      18.5  1409 26066.
-## 4 four_cheese L      18.0  1316 23622.
-## 5 classic_dlx M      16    1181 18896</code></pre>
-<p>So the top selling pizza combination is the small big_meat pizza! ##
-Using gt to Get the Table Presentation Ready 1. Now lets change the
-table into a gt object and:<br> - give it a title and subtitle and make
-the title bold (hint: use the md() function for that)<br> - insert
-spanner label to signify that the price and revenue figures correspond
-to the year 2015<br> - change the column names into presentation ready
-names<br> - round the revenue numbers to the nearest dollar, eliminating
-any decimal points <br></p>
-<pre class="r"><code># Insert your answer here. </code></pre>
-</div>
-<div id="solution-1" class="section level2">
-<h2>Solution 1:</h2>
-<pre class="r"><code>top_5_table &lt;- gt(top_5_pizzas) %&gt;% 
-  tab_header(title =  md(&quot;**Top Five Best Selling Pizzas**&quot;),
-             subtitle = md(&quot;Most Sold Pizza Combinations in 2015&quot;)) %&gt;% 
-  tab_spanner(label = &quot;In 2015&quot;,
-              columns = c(n, rev)) %&gt;% 
-  cols_label(
-    name = &quot;Pizza Name&quot;,
-    size = &quot;Pizza Size&quot;,
-    price = &quot;Price&quot;,
-    n = &quot;Pizzas Sold&quot;,
-    rev = &quot;Revenue per Pizza&quot;) %&gt;% 
-  fmt_number(columns = rev, decimals = 0)
+# Calculate the overall total sales
+overall_total_sales &lt;- sum(total_sales_by_size$total_sales)
 
-top_5_table</code></pre>
-<div id="fffaroirzj" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#fffaroirzj table {
+# Add a last row for overall total sales
+total_sales_by_size &lt;- total_sales_by_size %&gt;%
+  add_row(size = &quot;Overall Total&quot;, total_sales = overall_total_sales)
+
+# Print the result
+total_sales_by_size</code></pre>
+<pre><code>## # A tibble: 6 × 2
+##   size          total_sales
+##   &lt;chr&gt;               &lt;dbl&gt;
+## 1 L                 375319.
+## 2 M                 249382.
+## 3 S                 178076.
+## 4 XL                 14076 
+## 5 XXL                 1007.
+## 6 Overall Total     817860.</code></pre>
+<p>Okay, so now we have a table. And here is the first use of gt on the
+new table - making a display table:</p>
+<pre class="r"><code>gt_table1 &lt;- gt(total_sales_by_size)
+gt_table1</code></pre>
+<div id="rjcygjvzmh" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#rjcygjvzmh table {
 font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 -webkit-font-smoothing: antialiased;
 -moz-osx-font-smoothing: grayscale;
 }
-#fffaroirzj thead, #fffaroirzj tbody, #fffaroirzj tfoot, #fffaroirzj tr, #fffaroirzj td, #fffaroirzj th {
+#rjcygjvzmh thead, #rjcygjvzmh tbody, #rjcygjvzmh tfoot, #rjcygjvzmh tr, #rjcygjvzmh td, #rjcygjvzmh th {
 border-style: none;
 }
-#fffaroirzj p {
+#rjcygjvzmh p {
 margin: 0;
 padding: 0;
 }
-#fffaroirzj .gt_table {
+#rjcygjvzmh .gt_table {
 display: table;
 border-collapse: collapse;
 line-height: normal;
@@ -472,11 +468,11 @@ border-left-style: none;
 border-left-width: 2px;
 border-left-color: #D3D3D3;
 }
-#fffaroirzj .gt_caption {
+#rjcygjvzmh .gt_caption {
 padding-top: 4px;
 padding-bottom: 4px;
 }
-#fffaroirzj .gt_title {
+#rjcygjvzmh .gt_title {
 color: #333333;
 font-size: 125%;
 font-weight: initial;
@@ -487,7 +483,7 @@ padding-right: 5px;
 border-bottom-color: #FFFFFF;
 border-bottom-width: 0;
 }
-#fffaroirzj .gt_subtitle {
+#rjcygjvzmh .gt_subtitle {
 color: #333333;
 font-size: 85%;
 font-weight: initial;
@@ -498,7 +494,7 @@ padding-right: 5px;
 border-top-color: #FFFFFF;
 border-top-width: 0;
 }
-#fffaroirzj .gt_heading {
+#rjcygjvzmh .gt_heading {
 background-color: #FFFFFF;
 text-align: center;
 border-bottom-color: #FFFFFF;
@@ -509,12 +505,12 @@ border-right-style: none;
 border-right-width: 1px;
 border-right-color: #D3D3D3;
 }
-#fffaroirzj .gt_bottom_border {
+#rjcygjvzmh .gt_bottom_border {
 border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#fffaroirzj .gt_col_headings {
+#rjcygjvzmh .gt_col_headings {
 border-top-style: solid;
 border-top-width: 2px;
 border-top-color: #D3D3D3;
@@ -528,7 +524,7 @@ border-right-style: none;
 border-right-width: 1px;
 border-right-color: #D3D3D3;
 }
-#fffaroirzj .gt_col_heading {
+#rjcygjvzmh .gt_col_heading {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -547,7 +543,7 @@ padding-left: 5px;
 padding-right: 5px;
 overflow-x: hidden;
 }
-#fffaroirzj .gt_column_spanner_outer {
+#rjcygjvzmh .gt_column_spanner_outer {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -558,13 +554,13 @@ padding-bottom: 0;
 padding-left: 4px;
 padding-right: 4px;
 }
-#fffaroirzj .gt_column_spanner_outer:first-child {
+#rjcygjvzmh .gt_column_spanner_outer:first-child {
 padding-left: 0;
 }
-#fffaroirzj .gt_column_spanner_outer:last-child {
+#rjcygjvzmh .gt_column_spanner_outer:last-child {
 padding-right: 0;
 }
-#fffaroirzj .gt_column_spanner {
+#rjcygjvzmh .gt_column_spanner {
 border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
@@ -575,10 +571,10 @@ overflow-x: hidden;
 display: inline-block;
 width: 100%;
 }
-#fffaroirzj .gt_spanner_row {
+#rjcygjvzmh .gt_spanner_row {
 border-bottom-style: hidden;
 }
-#fffaroirzj .gt_group_heading {
+#rjcygjvzmh .gt_group_heading {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -603,7 +599,7 @@ border-right-color: #D3D3D3;
 vertical-align: middle;
 text-align: left;
 }
-#fffaroirzj .gt_empty_group_heading {
+#rjcygjvzmh .gt_empty_group_heading {
 padding: 0.5px;
 color: #333333;
 background-color: #FFFFFF;
@@ -617,13 +613,13 @@ border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 vertical-align: middle;
 }
-#fffaroirzj .gt_from_md > :first-child {
+#rjcygjvzmh .gt_from_md > :first-child {
 margin-top: 0;
 }
-#fffaroirzj .gt_from_md > :last-child {
+#rjcygjvzmh .gt_from_md > :last-child {
 margin-bottom: 0;
 }
-#fffaroirzj .gt_row {
+#rjcygjvzmh .gt_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -641,7 +637,7 @@ border-right-color: #D3D3D3;
 vertical-align: middle;
 overflow-x: hidden;
 }
-#fffaroirzj .gt_stub {
+#rjcygjvzmh .gt_stub {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -653,7 +649,7 @@ border-right-color: #D3D3D3;
 padding-left: 5px;
 padding-right: 5px;
 }
-#fffaroirzj .gt_stub_row_group {
+#rjcygjvzmh .gt_stub_row_group {
 color: #333333;
 background-color: #FFFFFF;
 font-size: 100%;
@@ -666,13 +662,13 @@ padding-left: 5px;
 padding-right: 5px;
 vertical-align: top;
 }
-#fffaroirzj .gt_row_group_first td {
+#rjcygjvzmh .gt_row_group_first td {
 border-top-width: 2px;
 }
-#fffaroirzj .gt_row_group_first th {
+#rjcygjvzmh .gt_row_group_first th {
 border-top-width: 2px;
 }
-#fffaroirzj .gt_summary_row {
+#rjcygjvzmh .gt_summary_row {
 color: #333333;
 background-color: #FFFFFF;
 text-transform: inherit;
@@ -681,14 +677,14 @@ padding-bottom: 8px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#fffaroirzj .gt_first_summary_row {
+#rjcygjvzmh .gt_first_summary_row {
 border-top-style: solid;
 border-top-color: #D3D3D3;
 }
-#fffaroirzj .gt_first_summary_row.thick {
+#rjcygjvzmh .gt_first_summary_row.thick {
 border-top-width: 2px;
 }
-#fffaroirzj .gt_last_summary_row {
+#rjcygjvzmh .gt_last_summary_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -697,7 +693,7 @@ border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#fffaroirzj .gt_grand_summary_row {
+#rjcygjvzmh .gt_grand_summary_row {
 color: #333333;
 background-color: #FFFFFF;
 text-transform: inherit;
@@ -706,7 +702,7 @@ padding-bottom: 8px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#fffaroirzj .gt_first_grand_summary_row {
+#rjcygjvzmh .gt_first_grand_summary_row {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -715,7 +711,7 @@ border-top-style: double;
 border-top-width: 6px;
 border-top-color: #D3D3D3;
 }
-#fffaroirzj .gt_last_grand_summary_row_top {
+#rjcygjvzmh .gt_last_grand_summary_row_top {
 padding-top: 8px;
 padding-bottom: 8px;
 padding-left: 5px;
@@ -724,10 +720,10 @@ border-bottom-style: double;
 border-bottom-width: 6px;
 border-bottom-color: #D3D3D3;
 }
-#fffaroirzj .gt_striped {
+#rjcygjvzmh .gt_striped {
 background-color: rgba(128, 128, 128, 0.05);
 }
-#fffaroirzj .gt_table_body {
+#rjcygjvzmh .gt_table_body {
 border-top-style: solid;
 border-top-width: 2px;
 border-top-color: #D3D3D3;
@@ -735,7 +731,7 @@ border-bottom-style: solid;
 border-bottom-width: 2px;
 border-bottom-color: #D3D3D3;
 }
-#fffaroirzj .gt_footnotes {
+#rjcygjvzmh .gt_footnotes {
 color: #333333;
 background-color: #FFFFFF;
 border-bottom-style: none;
@@ -748,7 +744,7 @@ border-right-style: none;
 border-right-width: 2px;
 border-right-color: #D3D3D3;
 }
-#fffaroirzj .gt_footnote {
+#rjcygjvzmh .gt_footnote {
 margin: 0px;
 font-size: 90%;
 padding-top: 4px;
@@ -756,7 +752,7 @@ padding-bottom: 4px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#fffaroirzj .gt_sourcenotes {
+#rjcygjvzmh .gt_sourcenotes {
 color: #333333;
 background-color: #FFFFFF;
 border-bottom-style: none;
@@ -769,57 +765,976 @@ border-right-style: none;
 border-right-width: 2px;
 border-right-color: #D3D3D3;
 }
-#fffaroirzj .gt_sourcenote {
+#rjcygjvzmh .gt_sourcenote {
 font-size: 90%;
 padding-top: 4px;
 padding-bottom: 4px;
 padding-left: 5px;
 padding-right: 5px;
 }
-#fffaroirzj .gt_left {
+#rjcygjvzmh .gt_left {
 text-align: left;
 }
-#fffaroirzj .gt_center {
+#rjcygjvzmh .gt_center {
 text-align: center;
 }
-#fffaroirzj .gt_right {
+#rjcygjvzmh .gt_right {
 text-align: right;
 font-variant-numeric: tabular-nums;
 }
-#fffaroirzj .gt_font_normal {
+#rjcygjvzmh .gt_font_normal {
 font-weight: normal;
 }
-#fffaroirzj .gt_font_bold {
+#rjcygjvzmh .gt_font_bold {
 font-weight: bold;
 }
-#fffaroirzj .gt_font_italic {
+#rjcygjvzmh .gt_font_italic {
 font-style: italic;
 }
-#fffaroirzj .gt_super {
+#rjcygjvzmh .gt_super {
 font-size: 65%;
 }
-#fffaroirzj .gt_footnote_marks {
+#rjcygjvzmh .gt_footnote_marks {
 font-size: 75%;
 vertical-align: 0.4em;
 position: initial;
 }
-#fffaroirzj .gt_asterisk {
+#rjcygjvzmh .gt_asterisk {
 font-size: 100%;
 vertical-align: 0;
 }
-#fffaroirzj .gt_indent_1 {
+#rjcygjvzmh .gt_indent_1 {
 text-indent: 5px;
 }
-#fffaroirzj .gt_indent_2 {
+#rjcygjvzmh .gt_indent_2 {
 text-indent: 10px;
 }
-#fffaroirzj .gt_indent_3 {
+#rjcygjvzmh .gt_indent_3 {
 text-indent: 15px;
 }
-#fffaroirzj .gt_indent_4 {
+#rjcygjvzmh .gt_indent_4 {
 text-indent: 20px;
 }
-#fffaroirzj .gt_indent_5 {
+#rjcygjvzmh .gt_indent_5 {
+text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="size">size</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="total_sales">total_sales</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="size" class="gt_row gt_left">L</td>
+<td headers="total_sales" class="gt_row gt_right">375318.7</td></tr>
+    <tr><td headers="size" class="gt_row gt_left">M</td>
+<td headers="total_sales" class="gt_row gt_right">249382.2</td></tr>
+    <tr><td headers="size" class="gt_row gt_left">S</td>
+<td headers="total_sales" class="gt_row gt_right">178076.5</td></tr>
+    <tr><td headers="size" class="gt_row gt_left">XL</td>
+<td headers="total_sales" class="gt_row gt_right">14076.0</td></tr>
+    <tr><td headers="size" class="gt_row gt_left">XXL</td>
+<td headers="total_sales" class="gt_row gt_right">1006.6</td></tr>
+    <tr><td headers="size" class="gt_row gt_left">Overall Total</td>
+<td headers="total_sales" class="gt_row gt_right">817860.1</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+<p><strong>Note:</strong> The main entry point into the gt API is the
+gt() function. If we pass total_sales_by_size to the function gt(),
+we’ll get a gt Table as output.</p>
+<p>That doesn’t look too bad? It’s really basic but hey we didn’t ask
+for much:)</p>
+<p>Now we will go ahead and learn about adding parts of a gt Table - if
+you remember the shiny table from the Presentation:). A brief on
+them:</p>
+<ul>
+<li>the Table Header (optional; with a title and possibly a
+subtitle)</li>
+<li>the Stub and the Stub Head (optional; contains row labels,
+optionally within row groups having row group labels and possibly
+summary labels when a summary is present)</li>
+<li>the Column Labels (contains column labels, optionally under spanner
+column labels)</li>
+<li>the Table Body (contains columns and rows of cells)</li>
+<li>the Table Footer (optional; possibly with footnotes and source
+notes)</li>
+</ul>
+<p>The way that we add parts like the Table Header and footnotes in the
+Table Footer is to use the **tab_*()<strong> family of functions. A
+</strong>Table Header** is easy to add so let’s see how the previous
+table looks with a title:</p>
+<pre class="r"><code># Adding title to our display table
+gt_table1 &lt;- gt_table1 %&gt;%
+  tab_header(
+    title = &quot;Total Sales by Pizza Size (2015)&quot;
+  )
+gt_table1</code></pre>
+<div id="vbsoakpdme" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#vbsoakpdme table {
+font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+-webkit-font-smoothing: antialiased;
+-moz-osx-font-smoothing: grayscale;
+}
+#vbsoakpdme thead, #vbsoakpdme tbody, #vbsoakpdme tfoot, #vbsoakpdme tr, #vbsoakpdme td, #vbsoakpdme th {
+border-style: none;
+}
+#vbsoakpdme p {
+margin: 0;
+padding: 0;
+}
+#vbsoakpdme .gt_table {
+display: table;
+border-collapse: collapse;
+line-height: normal;
+margin-left: auto;
+margin-right: auto;
+color: #333333;
+font-size: 16px;
+font-weight: normal;
+font-style: normal;
+background-color: #FFFFFF;
+width: auto;
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #A8A8A8;
+border-right-style: none;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #A8A8A8;
+border-left-style: none;
+border-left-width: 2px;
+border-left-color: #D3D3D3;
+}
+#vbsoakpdme .gt_caption {
+padding-top: 4px;
+padding-bottom: 4px;
+}
+#vbsoakpdme .gt_title {
+color: #333333;
+font-size: 125%;
+font-weight: initial;
+padding-top: 4px;
+padding-bottom: 4px;
+padding-left: 5px;
+padding-right: 5px;
+border-bottom-color: #FFFFFF;
+border-bottom-width: 0;
+}
+#vbsoakpdme .gt_subtitle {
+color: #333333;
+font-size: 85%;
+font-weight: initial;
+padding-top: 3px;
+padding-bottom: 5px;
+padding-left: 5px;
+padding-right: 5px;
+border-top-color: #FFFFFF;
+border-top-width: 0;
+}
+#vbsoakpdme .gt_heading {
+background-color: #FFFFFF;
+text-align: center;
+border-bottom-color: #FFFFFF;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+}
+#vbsoakpdme .gt_bottom_border {
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+}
+#vbsoakpdme .gt_col_headings {
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+}
+#vbsoakpdme .gt_col_heading {
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: normal;
+text-transform: inherit;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+vertical-align: bottom;
+padding-top: 5px;
+padding-bottom: 6px;
+padding-left: 5px;
+padding-right: 5px;
+overflow-x: hidden;
+}
+#vbsoakpdme .gt_column_spanner_outer {
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: normal;
+text-transform: inherit;
+padding-top: 0;
+padding-bottom: 0;
+padding-left: 4px;
+padding-right: 4px;
+}
+#vbsoakpdme .gt_column_spanner_outer:first-child {
+padding-left: 0;
+}
+#vbsoakpdme .gt_column_spanner_outer:last-child {
+padding-right: 0;
+}
+#vbsoakpdme .gt_column_spanner {
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+vertical-align: bottom;
+padding-top: 5px;
+padding-bottom: 5px;
+overflow-x: hidden;
+display: inline-block;
+width: 100%;
+}
+#vbsoakpdme .gt_spanner_row {
+border-bottom-style: hidden;
+}
+#vbsoakpdme .gt_group_heading {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: initial;
+text-transform: inherit;
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+vertical-align: middle;
+text-align: left;
+}
+#vbsoakpdme .gt_empty_group_heading {
+padding: 0.5px;
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: initial;
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+vertical-align: middle;
+}
+#vbsoakpdme .gt_from_md > :first-child {
+margin-top: 0;
+}
+#vbsoakpdme .gt_from_md > :last-child {
+margin-bottom: 0;
+}
+#vbsoakpdme .gt_row {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+margin: 10px;
+border-top-style: solid;
+border-top-width: 1px;
+border-top-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+vertical-align: middle;
+overflow-x: hidden;
+}
+#vbsoakpdme .gt_stub {
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: initial;
+text-transform: inherit;
+border-right-style: solid;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+padding-left: 5px;
+padding-right: 5px;
+}
+#vbsoakpdme .gt_stub_row_group {
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: initial;
+text-transform: inherit;
+border-right-style: solid;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+padding-left: 5px;
+padding-right: 5px;
+vertical-align: top;
+}
+#vbsoakpdme .gt_row_group_first td {
+border-top-width: 2px;
+}
+#vbsoakpdme .gt_row_group_first th {
+border-top-width: 2px;
+}
+#vbsoakpdme .gt_summary_row {
+color: #333333;
+background-color: #FFFFFF;
+text-transform: inherit;
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+}
+#vbsoakpdme .gt_first_summary_row {
+border-top-style: solid;
+border-top-color: #D3D3D3;
+}
+#vbsoakpdme .gt_first_summary_row.thick {
+border-top-width: 2px;
+}
+#vbsoakpdme .gt_last_summary_row {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+}
+#vbsoakpdme .gt_grand_summary_row {
+color: #333333;
+background-color: #FFFFFF;
+text-transform: inherit;
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+}
+#vbsoakpdme .gt_first_grand_summary_row {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+border-top-style: double;
+border-top-width: 6px;
+border-top-color: #D3D3D3;
+}
+#vbsoakpdme .gt_last_grand_summary_row_top {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+border-bottom-style: double;
+border-bottom-width: 6px;
+border-bottom-color: #D3D3D3;
+}
+#vbsoakpdme .gt_striped {
+background-color: rgba(128, 128, 128, 0.05);
+}
+#vbsoakpdme .gt_table_body {
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+}
+#vbsoakpdme .gt_footnotes {
+color: #333333;
+background-color: #FFFFFF;
+border-bottom-style: none;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 2px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+}
+#vbsoakpdme .gt_footnote {
+margin: 0px;
+font-size: 90%;
+padding-top: 4px;
+padding-bottom: 4px;
+padding-left: 5px;
+padding-right: 5px;
+}
+#vbsoakpdme .gt_sourcenotes {
+color: #333333;
+background-color: #FFFFFF;
+border-bottom-style: none;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 2px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+}
+#vbsoakpdme .gt_sourcenote {
+font-size: 90%;
+padding-top: 4px;
+padding-bottom: 4px;
+padding-left: 5px;
+padding-right: 5px;
+}
+#vbsoakpdme .gt_left {
+text-align: left;
+}
+#vbsoakpdme .gt_center {
+text-align: center;
+}
+#vbsoakpdme .gt_right {
+text-align: right;
+font-variant-numeric: tabular-nums;
+}
+#vbsoakpdme .gt_font_normal {
+font-weight: normal;
+}
+#vbsoakpdme .gt_font_bold {
+font-weight: bold;
+}
+#vbsoakpdme .gt_font_italic {
+font-style: italic;
+}
+#vbsoakpdme .gt_super {
+font-size: 65%;
+}
+#vbsoakpdme .gt_footnote_marks {
+font-size: 75%;
+vertical-align: 0.4em;
+position: initial;
+}
+#vbsoakpdme .gt_asterisk {
+font-size: 100%;
+vertical-align: 0;
+}
+#vbsoakpdme .gt_indent_1 {
+text-indent: 5px;
+}
+#vbsoakpdme .gt_indent_2 {
+text-indent: 10px;
+}
+#vbsoakpdme .gt_indent_3 {
+text-indent: 15px;
+}
+#vbsoakpdme .gt_indent_4 {
+text-indent: 20px;
+}
+#vbsoakpdme .gt_indent_5 {
+text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    <tr class="gt_heading">
+      <td colspan="2" class="gt_heading gt_title gt_font_normal gt_bottom_border" style>Total Sales by Pizza Size (2015)</td>
+    </tr>
+    
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" scope="col" id="size">size</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="total_sales">total_sales</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="size" class="gt_row gt_left">L</td>
+<td headers="total_sales" class="gt_row gt_right">375318.7</td></tr>
+    <tr><td headers="size" class="gt_row gt_left">M</td>
+<td headers="total_sales" class="gt_row gt_right">249382.2</td></tr>
+    <tr><td headers="size" class="gt_row gt_left">S</td>
+<td headers="total_sales" class="gt_row gt_right">178076.5</td></tr>
+    <tr><td headers="size" class="gt_row gt_left">XL</td>
+<td headers="total_sales" class="gt_row gt_right">14076.0</td></tr>
+    <tr><td headers="size" class="gt_row gt_left">XXL</td>
+<td headers="total_sales" class="gt_row gt_right">1006.6</td></tr>
+    <tr><td headers="size" class="gt_row gt_left">Overall Total</td>
+<td headers="total_sales" class="gt_row gt_right">817860.1</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+</div>
+<div id="the-top-5-best-selling-pizzas" class="section level2">
+<h2>The Top 5 Best Selling Pizzas</h2>
+<p>We want to get the best selling pizzas from this list. Also include
+the size and price and calculate the total revenue for each pizza. How
+would you go about it?</p>
+<pre class="r"><code>top_5_pizzas &lt;- pizzaplace %&gt;% 
+  group_by(name, size, price) %&gt;% 
+  count(name) %&gt;% 
+  arrange(desc(n)) %&gt;% 
+  head(5) %&gt;% 
+  mutate(rev = price * n) %&gt;% 
+  ungroup()
+
+top_5_pizzas</code></pre>
+<pre><code>## # A tibble: 5 × 5
+##   name        size  price     n    rev
+##   &lt;chr&gt;       &lt;chr&gt; &lt;dbl&gt; &lt;int&gt;  &lt;dbl&gt;
+## 1 big_meat    S      12    1914 22968 
+## 2 thai_ckn    L      20.8  1410 29258.
+## 3 five_cheese L      18.5  1409 26066.
+## 4 four_cheese L      18.0  1316 23622.
+## 5 classic_dlx M      16    1181 18896</code></pre>
+<p>So the top selling pizza combination is the small big_meat pizza!</p>
+</div>
+<div id="using-gt-to-get-the-table-presentation-ready" class="section level2">
+<h2>Using gt to Get the Table Presentation Ready</h2>
+<p><strong>Exercise 1:</strong> Lets change the table into a gt object
+and:</p>
+<ul>
+<li>give it a title and subtitle and make the title bold (hint: use the
+md() function for that)</li>
+<li>insert spanner label to signify that the price and revenue figures
+correspond to the year 2015</li>
+<li>change the column names into presentation ready names</li>
+<li>round the revenue numbers to the nearest dollar, eliminating any
+decimal points</li>
+</ul>
+<pre class="r"><code># Insert your answer here. </code></pre>
+</div>
+<div id="solution-1" class="section level2">
+<h2>Solution 1:</h2>
+<pre class="r"><code>top_5_table &lt;- gt(top_5_pizzas) %&gt;% 
+  tab_header(title =  md(&quot;**Top Five Best Selling Pizzas**&quot;),
+             subtitle = md(&quot;Most Sold Pizza Combinations in 2015&quot;)) %&gt;% 
+  tab_spanner(label = &quot;In 2015&quot;,
+              columns = c(n, rev)) %&gt;% 
+  cols_label(
+    name = &quot;Pizza Name&quot;,
+    size = &quot;Pizza Size&quot;,
+    price = &quot;Price&quot;,
+    n = &quot;Pizzas Sold&quot;,
+    rev = &quot;Revenue per Pizza&quot;) %&gt;% 
+  fmt_number(columns = rev, decimals = 0)
+
+top_5_table</code></pre>
+<div id="dllvqjwgwp" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#dllvqjwgwp table {
+font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+-webkit-font-smoothing: antialiased;
+-moz-osx-font-smoothing: grayscale;
+}
+#dllvqjwgwp thead, #dllvqjwgwp tbody, #dllvqjwgwp tfoot, #dllvqjwgwp tr, #dllvqjwgwp td, #dllvqjwgwp th {
+border-style: none;
+}
+#dllvqjwgwp p {
+margin: 0;
+padding: 0;
+}
+#dllvqjwgwp .gt_table {
+display: table;
+border-collapse: collapse;
+line-height: normal;
+margin-left: auto;
+margin-right: auto;
+color: #333333;
+font-size: 16px;
+font-weight: normal;
+font-style: normal;
+background-color: #FFFFFF;
+width: auto;
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #A8A8A8;
+border-right-style: none;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #A8A8A8;
+border-left-style: none;
+border-left-width: 2px;
+border-left-color: #D3D3D3;
+}
+#dllvqjwgwp .gt_caption {
+padding-top: 4px;
+padding-bottom: 4px;
+}
+#dllvqjwgwp .gt_title {
+color: #333333;
+font-size: 125%;
+font-weight: initial;
+padding-top: 4px;
+padding-bottom: 4px;
+padding-left: 5px;
+padding-right: 5px;
+border-bottom-color: #FFFFFF;
+border-bottom-width: 0;
+}
+#dllvqjwgwp .gt_subtitle {
+color: #333333;
+font-size: 85%;
+font-weight: initial;
+padding-top: 3px;
+padding-bottom: 5px;
+padding-left: 5px;
+padding-right: 5px;
+border-top-color: #FFFFFF;
+border-top-width: 0;
+}
+#dllvqjwgwp .gt_heading {
+background-color: #FFFFFF;
+text-align: center;
+border-bottom-color: #FFFFFF;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+}
+#dllvqjwgwp .gt_bottom_border {
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+}
+#dllvqjwgwp .gt_col_headings {
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+}
+#dllvqjwgwp .gt_col_heading {
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: normal;
+text-transform: inherit;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+vertical-align: bottom;
+padding-top: 5px;
+padding-bottom: 6px;
+padding-left: 5px;
+padding-right: 5px;
+overflow-x: hidden;
+}
+#dllvqjwgwp .gt_column_spanner_outer {
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: normal;
+text-transform: inherit;
+padding-top: 0;
+padding-bottom: 0;
+padding-left: 4px;
+padding-right: 4px;
+}
+#dllvqjwgwp .gt_column_spanner_outer:first-child {
+padding-left: 0;
+}
+#dllvqjwgwp .gt_column_spanner_outer:last-child {
+padding-right: 0;
+}
+#dllvqjwgwp .gt_column_spanner {
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+vertical-align: bottom;
+padding-top: 5px;
+padding-bottom: 5px;
+overflow-x: hidden;
+display: inline-block;
+width: 100%;
+}
+#dllvqjwgwp .gt_spanner_row {
+border-bottom-style: hidden;
+}
+#dllvqjwgwp .gt_group_heading {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: initial;
+text-transform: inherit;
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+vertical-align: middle;
+text-align: left;
+}
+#dllvqjwgwp .gt_empty_group_heading {
+padding: 0.5px;
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: initial;
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+vertical-align: middle;
+}
+#dllvqjwgwp .gt_from_md > :first-child {
+margin-top: 0;
+}
+#dllvqjwgwp .gt_from_md > :last-child {
+margin-bottom: 0;
+}
+#dllvqjwgwp .gt_row {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+margin: 10px;
+border-top-style: solid;
+border-top-width: 1px;
+border-top-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 1px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 1px;
+border-right-color: #D3D3D3;
+vertical-align: middle;
+overflow-x: hidden;
+}
+#dllvqjwgwp .gt_stub {
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: initial;
+text-transform: inherit;
+border-right-style: solid;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+padding-left: 5px;
+padding-right: 5px;
+}
+#dllvqjwgwp .gt_stub_row_group {
+color: #333333;
+background-color: #FFFFFF;
+font-size: 100%;
+font-weight: initial;
+text-transform: inherit;
+border-right-style: solid;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+padding-left: 5px;
+padding-right: 5px;
+vertical-align: top;
+}
+#dllvqjwgwp .gt_row_group_first td {
+border-top-width: 2px;
+}
+#dllvqjwgwp .gt_row_group_first th {
+border-top-width: 2px;
+}
+#dllvqjwgwp .gt_summary_row {
+color: #333333;
+background-color: #FFFFFF;
+text-transform: inherit;
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+}
+#dllvqjwgwp .gt_first_summary_row {
+border-top-style: solid;
+border-top-color: #D3D3D3;
+}
+#dllvqjwgwp .gt_first_summary_row.thick {
+border-top-width: 2px;
+}
+#dllvqjwgwp .gt_last_summary_row {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+}
+#dllvqjwgwp .gt_grand_summary_row {
+color: #333333;
+background-color: #FFFFFF;
+text-transform: inherit;
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+}
+#dllvqjwgwp .gt_first_grand_summary_row {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+border-top-style: double;
+border-top-width: 6px;
+border-top-color: #D3D3D3;
+}
+#dllvqjwgwp .gt_last_grand_summary_row_top {
+padding-top: 8px;
+padding-bottom: 8px;
+padding-left: 5px;
+padding-right: 5px;
+border-bottom-style: double;
+border-bottom-width: 6px;
+border-bottom-color: #D3D3D3;
+}
+#dllvqjwgwp .gt_striped {
+background-color: rgba(128, 128, 128, 0.05);
+}
+#dllvqjwgwp .gt_table_body {
+border-top-style: solid;
+border-top-width: 2px;
+border-top-color: #D3D3D3;
+border-bottom-style: solid;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+}
+#dllvqjwgwp .gt_footnotes {
+color: #333333;
+background-color: #FFFFFF;
+border-bottom-style: none;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 2px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+}
+#dllvqjwgwp .gt_footnote {
+margin: 0px;
+font-size: 90%;
+padding-top: 4px;
+padding-bottom: 4px;
+padding-left: 5px;
+padding-right: 5px;
+}
+#dllvqjwgwp .gt_sourcenotes {
+color: #333333;
+background-color: #FFFFFF;
+border-bottom-style: none;
+border-bottom-width: 2px;
+border-bottom-color: #D3D3D3;
+border-left-style: none;
+border-left-width: 2px;
+border-left-color: #D3D3D3;
+border-right-style: none;
+border-right-width: 2px;
+border-right-color: #D3D3D3;
+}
+#dllvqjwgwp .gt_sourcenote {
+font-size: 90%;
+padding-top: 4px;
+padding-bottom: 4px;
+padding-left: 5px;
+padding-right: 5px;
+}
+#dllvqjwgwp .gt_left {
+text-align: left;
+}
+#dllvqjwgwp .gt_center {
+text-align: center;
+}
+#dllvqjwgwp .gt_right {
+text-align: right;
+font-variant-numeric: tabular-nums;
+}
+#dllvqjwgwp .gt_font_normal {
+font-weight: normal;
+}
+#dllvqjwgwp .gt_font_bold {
+font-weight: bold;
+}
+#dllvqjwgwp .gt_font_italic {
+font-style: italic;
+}
+#dllvqjwgwp .gt_super {
+font-size: 65%;
+}
+#dllvqjwgwp .gt_footnote_marks {
+font-size: 75%;
+vertical-align: 0.4em;
+position: initial;
+}
+#dllvqjwgwp .gt_asterisk {
+font-size: 100%;
+vertical-align: 0;
+}
+#dllvqjwgwp .gt_indent_1 {
+text-indent: 5px;
+}
+#dllvqjwgwp .gt_indent_2 {
+text-indent: 10px;
+}
+#dllvqjwgwp .gt_indent_3 {
+text-indent: 15px;
+}
+#dllvqjwgwp .gt_indent_4 {
+text-indent: 20px;
+}
+#dllvqjwgwp .gt_indent_5 {
 text-indent: 25px;
 }
 </style>

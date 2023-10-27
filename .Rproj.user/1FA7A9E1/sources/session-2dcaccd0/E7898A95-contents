@@ -1,5 +1,5 @@
 ---
-title: "workshop_material"
+title: "Practice Material gt and gtExtras"
 author: "Lino, Aditya, Letícia"
 date: "2023-10-27"
 output: html_document
@@ -9,23 +9,102 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Installing packages and getting started
-```{r}
-#install.packages("gt")
+## Short Recap: What does gt package do?
 
+It produces nice display tables which are different from the data tables.
+
+A display table is something which you often come across like tables in a web page, a journal article, or in a magazine.
+
+**Note:** The display tables are output only and we are not going to use them as input ever again.
+
+## What more can gt do?
+
+It helps in annotations, table element styling, and text transformations that serve to communicate the subject matter more clearly.
+
+**Example time - let's see how does the gt package works**
+
+**But before that - some basics:**
+
+```{r, message=FALSE}
+# install.packages("tidyverse")
+# install.packages("gt")
+# install.packages("gtExtras")
 library(gt)
 library(tidyverse)
-
-pizza_place_raw<- pizzaplace
-
-head(pizza_place_raw)
+library(gtExtras)
 ```
 
-## The Top 10 Best Selling Pizzas
-We want to get the best selling pizzas from this list. Also include the size and price and calculate the total revenue for each pizza. 
+**A sneak peek into the dataset we are going to use - I hope you love "PIZZA"**
+
+```{r, echo=TRUE}
+data("pizzaplace")
+```
+
+"pizzaplace" is an in-built dataset under the gt package. 
+
+It has information about 32 different types of pizza in 4 different categories: classic, chicken, supreme, and veggie. 
+
+**Let's take a look at our dataset:**
+```{r, echo=TRUE}
+names(pizzaplace)
+head(pizzaplace)
+```
+Before using the gt package we need to have a table. Let's create a table from our dataset using the dplyr functions.
+
+The table we are creating is this: **Total Sales by Pizza Size (2015)**
+
+```{r, echo=TRUE}
+# Group the data by pizza size and calculate total sales for each size
+total_sales_by_size <- pizzaplace %>%
+  group_by(size) %>%
+  summarise(total_sales = sum(price))
+
+# Calculate the overall total sales
+overall_total_sales <- sum(total_sales_by_size$total_sales)
+
+# Add a last row for overall total sales
+total_sales_by_size <- total_sales_by_size %>%
+  add_row(size = "Overall Total", total_sales = overall_total_sales)
+
+# Print the result
+total_sales_by_size
+```
+
+Okay, so now we have a table.
+And here is the first use of gt on the new table - making a display table:
+```{r, echo=TRUE}
+gt_table1 <- gt(total_sales_by_size)
+gt_table1
+```
+**Note:** The main entry point into the gt API is the gt() function. If we pass total_sales_by_size to the function gt(), we’ll get a gt Table as output.
+
+That doesn't look too bad? It's really basic but hey we didn't ask for much:)
+
+Now we will go ahead and learn about adding parts of a gt Table - if you remember the shiny table from the Presentation:). A brief on them:
+
+* the Table Header (optional; with a title and possibly a subtitle) 
+* the Stub and the Stub Head (optional; contains row labels, optionally within row groups having row group labels and possibly summary labels when a summary is present)
+* the Column Labels (contains column labels, optionally under spanner column labels)
+* the Table Body (contains columns and rows of cells)
+* the Table Footer (optional; possibly with footnotes and source notes)
+
+The way that we add parts like the Table Header and footnotes in the Table Footer is to use the **tab_*()** family of functions. 
+A **Table Header** is easy to add so let’s see how the previous table looks with a title:
+```{r, echo=TRUE}
+# Adding title to our display table
+gt_table1 <- gt_table1 %>%
+  tab_header(
+    title = "Total Sales by Pizza Size (2015)"
+  )
+gt_table1
+```
+
+## Execise 1:The Top 5 Best Selling Pizzas
+We want to get the best selling pizzas from this list. Also include the size and price and calculate the total revenue for each pizza.
+
 How would you go about it?
 ```{r, echo = TRUE}
-top_5_pizzas <- pizza_place_raw %>% 
+top_5_pizzas <- pizzaplace %>% 
   group_by(name, size, price) %>% 
   count(name) %>% 
   arrange(desc(n)) %>% 
@@ -36,18 +115,22 @@ top_5_pizzas <- pizza_place_raw %>%
 top_5_pizzas
 ```
 So the top selling pizza combination is the small big_meat pizza! 
+
 ## Using gt to Get the Table Presentation Ready
-1. Now lets change the table into a gt object and:<br>
-- give it a title and subtitle and make the title bold (hint: use the md() function for that)<br>
-- insert spanner label to signify that the price and revenue figures correspond to the year 2015<br>
-- change the column names into presentation ready names<br>
-- round the revenue numbers to the nearest dollar, eliminating any decimal points <br>
+
+**Exercise 1:** Lets change the table into a gt object and:
+
+* give it a title and subtitle and make the title bold (hint: use the md() function for that)
+* insert spanner label to signify that the price and revenue figures correspond to the year 2015
+* change the column names into presentation ready names
+* round the revenue numbers to the nearest dollar, eliminating any decimal points
+
 ```{r, echo = TRUE}
 
-# Insert your answer here. 
+# Insert your answer here. Use https://gt.rstudio.com/reference/index.html as reference for the needed functions
 
 ```
-## Solution 1: 
+## Solution Exercise 1: 
 ```{r, echo = TRUE}
 top_5_table <- gt(top_5_pizzas) %>% 
   tab_header(title =  md("**Top Five Best Selling Pizzas**"),
@@ -64,3 +147,11 @@ top_5_table <- gt(top_5_pizzas) %>%
 
 top_5_table
 ```
+
+## Exercise 2: Bringing Color into gt-Tables
+
+Aditya:
+
+## Exercise 3: Using gtExtras
+
+In the next exercise we will be using gtExtras to go above an beyond.
