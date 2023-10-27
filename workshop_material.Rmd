@@ -37,15 +37,14 @@ top_5_pizzas
 ```
 So the top selling pizza combination is the small big_meat pizza! 
 ## Using gt to Get the Table Presentation Ready
-1. Now lets change the table into a gt object and:
-- give it a title and subtitle and make the title bold (hint: use the md() function for that)
-- change the column names into presentation ready names
-- round the revenue numbers to the nearest dollar, eliminating any decimal points 
-- insert spanner label to signify that the price and revenue figures correspond to the year 2015
-- insert a 
-```{r}
+1. Now lets change the table into a gt object and:<br>
+- give it a title and subtitle and make the title bold (hint: use the md() function for that)<br>
+- insert spanner label to signify that the price and revenue figures correspond to the year 2015<br>
+- change the column names into presentation ready names<br>
+- round the revenue numbers to the nearest dollar, eliminating any decimal points <br>
+```{r, echo = TRUE}
 
-
+# Insert your answer here. 
 
 ```
 ## Solution 1: 
