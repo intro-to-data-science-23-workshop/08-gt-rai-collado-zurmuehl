@@ -1,7 +1,0 @@
-"0","top_10_pizzas <- pizza_place_raw %>% 
-  group_by(name) %>% 
-  count(name) %>% 
-  arrange(desc(n)) %>% 
-  top_n(10)
-"
-"2","Selecting by n"

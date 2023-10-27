@@ -1,39 +1,16 @@
 ---
-title: "Workshop_Material"
-author: "Lino Zurmuehl + linozurmuehl"
-output: html_document:
-    code_folding: show
-    df_print: paged
-    highlight: tango
-    number_sections: no
-    theme: cosmo
-    toc: no
-date: "`r format(Sys.time(), '%B %d, %Y | %H:%M:%S | %Z')`"
+title: "workshop_material"
+author: "Lino, Aditya, Letícia"
+date: "2023-10-27"
+output: html_document
 ---
 
-```{r, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE,
-                      eval = TRUE,
-                      error = FALSE,
-                      message = FALSE,
-                      warning = FALSE,
-                      comment = NA)
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
-
-This is an R Markdown presentation. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
-
-## Slide with Bullets
-
-- Bullet 1
-- Bullet 2
-- Bullet 3
-
 ## Installing packages and getting started
-```{r, echo = TRUE, comment = '#'}
+```{r, echo = TRUE}
 #install.packages("gt")
 
 library(gt)
