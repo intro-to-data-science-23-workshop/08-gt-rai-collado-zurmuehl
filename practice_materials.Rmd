@@ -161,17 +161,7 @@ Here are some of the styles we can apply:
 # Insert your answer here. Use the functions mentioned above.
 
 ```
-**Solution**
-```{r}
-top_5_table <- top_5_table %>%
-  tab_options(heading.background.color = 'blue') %>% 
-  tab_options(column_labels.font.weight = 'bold',
-    column_labels.background.color = 'lightgrey') %>% 
-  tab_style(
-    style = cell_text(style = 'italic'),
-    locations = cells_title(groups = 'subtitle'))
-top_5_table
-```
+
 In the current table we have three Pizza Size - S, L, and M. How will you group the table so that you have three **row groups**?
 ```{r}
 
